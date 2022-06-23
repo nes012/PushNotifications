@@ -2,12 +2,8 @@ package nesty.anzhy.pushnotifications
 
 import android.os.Bundle
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.android.material.snackbar.Snackbar
 import nesty.anzhy.pushnotifications.databinding.ActivitySecondBinding
 
 class SecondActivity : AppCompatActivity() {
@@ -29,7 +25,12 @@ class SecondActivity : AppCompatActivity() {
 
         val numberOfCookies = intent.getStringExtra("cookie")
 
-        Toast.makeText(this, numberOfCookies, Toast.LENGTH_LONG).show()
+        val cookies = numberOfCookies!!.toInt()
+        if (cookies < 50) {
+            Toast.makeText(this, "You get small bonus.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "You get HUGE bonus!", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }

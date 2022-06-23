@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import nesty.anzhy.pushnotifications.utils.Constants.Companion.CHANNEL_ID
 
 
@@ -37,10 +38,12 @@ class MainActivity : AppCompatActivity() {
 
         myRegistrationToken()
 
-
         var intent = Intent(this@MainActivity, SecondActivity::class.java)
         buyBtn.setOnClickListener {
             val numberOfCookies = cookies.text.toString()
+
+            subscribeToDiscount(numberOfCookies.toInt())
+            //FirebaseMessaging.getInstance().unsubscribeFromTopic("small_discount")
 
             intent.putExtra("cookie", numberOfCookies)
             var pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -68,9 +71,8 @@ class MainActivity : AppCompatActivity() {
              */
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder = NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle(
-                    "NOTIFICATION USING " +
-                            "KOTLIN"
+                builder = NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("NOTIFICATION USING KOTLIN"
                 ).setContentText("You just bought $numberOfCookies Cookies!")
                     .setSmallIcon(R.drawable.chihuahua)
                     /*
@@ -139,5 +141,37 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, token, Toast.LENGTH_SHORT).show()
                 Log.e("Token", token.toString())
             })
+    }
+
+    fun subscribeToDiscount(cookies: Int) {
+        if (cookies <= 50) {
+            FirebaseMessaging.getInstance().subscribeToTopic("small_discount")
+                .addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Toast.makeText(this,
+                        "Failed to subscribe to small discount",
+                            Toast.LENGTH_LONG).show()
+                    }
+                    else {
+                        Toast.makeText(this,
+                            "Successfully subscribed to small discount",
+                            Toast.LENGTH_LONG).show()
+                    }
+                }
+        } else {
+            FirebaseMessaging.getInstance().subscribeToTopic("huge_discount")
+                .addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Toast.makeText(this,
+                            "Failed to subscribe to huge discount",
+                            Toast.LENGTH_LONG).show()
+                    }
+                    else {
+                        Toast.makeText(this,
+                            "Successfully subscribed to huge discount",
+                            Toast.LENGTH_LONG).show()
+                    }
+                }
+        }
     }
 }

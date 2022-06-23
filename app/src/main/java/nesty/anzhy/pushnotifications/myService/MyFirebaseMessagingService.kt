@@ -2,6 +2,8 @@ package nesty.anzhy.pushnotifications.myService
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -9,6 +11,8 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import nesty.anzhy.pushnotifications.R
+import java.io.IOException
+import java.net.URL
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -16,16 +20,40 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         const val CHANNEL_ID = "2"
     }
 
+    var imgUrl: String? = null
+    var imgBitmap: Bitmap? = null
+
     class MyFirebaseMessagingService() {}
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.e("remoteMessage", remoteMessage.notification.toString())
         if (remoteMessage.notification != null) {
+
+            if (remoteMessage.notification!!.imageUrl != null) {
+                imgUrl = remoteMessage.notification!!.imageUrl.toString()
+                imgBitmap = getBitmapFromURL(imgUrl!!)
+            }
+
             // create and display notification
             showNotification(
                 remoteMessage.notification!!.title.toString(),
                 remoteMessage.notification!!.body.toString()
             )
+        }
+    }
+
+    private fun getBitmapFromURL(imgUrl: String): Bitmap? {
+        return try {
+            val url = URL(imgUrl)
+            val connection = url.openConnection()
+            connection.doInput = true
+            connection.connect()
+
+            val inputStream = connection.getInputStream()
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
         }
     }
 
@@ -42,7 +70,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             builder.setSmallIcon(R.drawable.chihuahua)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setLargeIcon(imgBitmap)
+                .setStyle(NotificationCompat.BigPictureStyle()
+                    .bigPicture(imgBitmap)
+                    .bigLargeIcon(null))
+                .priority = NotificationCompat.PRIORITY_DEFAULT
+
+
         }
         val notificationManagerCompat: NotificationManagerCompat =
             NotificationManagerCompat.from(this)
