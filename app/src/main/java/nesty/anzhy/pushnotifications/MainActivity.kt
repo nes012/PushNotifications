@@ -1,21 +1,22 @@
 package nesty.anzhy.pushnotifications
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.RemoteViews
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import nesty.anzhy.pushnotifications.utils.Constants.Companion.CHANNEL_ID
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManagerCompat: NotificationManagerCompat
     private lateinit var builder: NotificationCompat.Builder
 
-    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity() {
 
         // Create notification channel if device is using API 26+
         createNotificationChannel()
+
+        myRegistrationToken()
+
+
         var intent = Intent(this@MainActivity, SecondActivity::class.java)
         buyBtn.setOnClickListener {
             val numberOfCookies = cookies.text.toString()
@@ -47,18 +51,21 @@ class MainActivity : AppCompatActivity() {
                     PendingIntent.FLAG_MUTABLE
                 )
             } else {
-                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
             }
-
+            /*
             val bitmap = BitmapFactory.decodeResource(
                 resources, R.drawable.chihuahua2
             )
+             */
 
+            /*
             //remote view class describes a view hierarchy. we can dynamically change some layouts.
             val collapsedLayout = RemoteViews(packageName, R.layout.collapsed_layout)
             val expandedLayout = RemoteViews(packageName, R.layout.expanded_layout)
             expandedLayout.setImageViewResource(R.id.imgChihuahua, R.drawable.chihuahua2)
             expandedLayout.setTextViewText(R.id.txtNumberOfCookies, "Hello!!\n You successfully bought $numberOfCookies cookies!")
+             */
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder = NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle(
@@ -66,9 +73,12 @@ class MainActivity : AppCompatActivity() {
                             "KOTLIN"
                 ).setContentText("You just bought $numberOfCookies Cookies!")
                     .setSmallIcon(R.drawable.chihuahua)
-                    .setCustomContentView(collapsedLayout)
-                    .setCustomBigContentView(expandedLayout)
-                    .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                    /*
+                .setCustomContentView(collapsedLayout)
+                .setCustomBigContentView(expandedLayout)
+
+                .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                         */
                     /*
                 .setLargeIcon(
                     bitmap
@@ -84,11 +94,12 @@ class MainActivity : AppCompatActivity() {
                     /*
                 .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap)
                     .bigLargeIcon(null))
-                    .addAction(R.mipmap.ic_launcher, "Get BONUS!", pendingIntent)
                     .setColor(ContextCompat.getColor(this, R.color.green))
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)
                      */
+                    .addAction(R.mipmap.ic_launcher, "Get BONUS!", pendingIntent)
+
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             }
             notificationManagerCompat = NotificationManagerCompat.from(this@MainActivity)
@@ -112,5 +123,21 @@ class MainActivity : AppCompatActivity() {
             val manager: NotificationManager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
+    }
+
+
+    private fun myRegistrationToken() {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.e("TAG", "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+                // Get new Instance ID token
+                val token = task.result?.token
+                // Log and toast
+                Toast.makeText(this@MainActivity, token, Toast.LENGTH_SHORT).show()
+                Log.e("Token", token.toString())
+            })
     }
 }

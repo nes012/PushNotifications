@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "752685747094",
+    "project_id": "pushnotifications-c7adf",
+    "storage_bucket": "pushnotifications-c7adf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752685747094:android:7a74b54fc2f845b9e66bb7",
+        "android_client_info": {
+          "package_name": "nesty.anzhy.pushnotifications"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "752685747094-okibgavjr7v836eiml5r0agg7b4k0bl0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6IHnbVnNSO8illq3cPhpsZt83jQoy05U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "752685747094-okibgavjr7v836eiml5r0agg7b4k0bl0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
