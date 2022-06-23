@@ -40,6 +40,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 remoteMessage.notification!!.body.toString()
             )
         }
+
+        if (remoteMessage.data.isNotEmpty()) {
+            val myData: Map<String, String> = remoteMessage.data
+            Log.e("MYDATA", myData["key1"].toString())
+            Log.e("MYDATA", myData["key2"].toString())
+        }
+
     }
 
     private fun getBitmapFromURL(imgUrl: String): Bitmap? {
@@ -71,9 +78,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 .setContentTitle(title)
                 .setContentText(text)
                 .setLargeIcon(imgBitmap)
-                .setStyle(NotificationCompat.BigPictureStyle()
-                    .bigPicture(imgBitmap)
-                    .bigLargeIcon(null))
+                .setStyle(
+                    NotificationCompat.BigPictureStyle()
+                        .bigPicture(imgBitmap)
+                        .bigLargeIcon(null)
+                )
                 .priority = NotificationCompat.PRIORITY_DEFAULT
 
 

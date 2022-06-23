@@ -4,6 +4,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.Color
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     PendingIntent.FLAG_MUTABLE
                 )
             } else {
-                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             }
             /*
             val bitmap = BitmapFactory.decodeResource(
@@ -70,39 +72,47 @@ class MainActivity : AppCompatActivity() {
             expandedLayout.setTextViewText(R.id.txtNumberOfCookies, "Hello!!\n You successfully bought $numberOfCookies cookies!")
              */
 
+            val defaultNotificationSound =
+                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("NOTIFICATION USING KOTLIN"
-                ).setContentText("You just bought $numberOfCookies Cookies!")
+                    .setContentTitle(
+                        "NOTIFICATION USING KOTLIN"
+                    ).setContentText("You just bought $numberOfCookies Cookies!")
                     .setSmallIcon(R.drawable.chihuahua)
-                    /*
-                .setCustomContentView(collapsedLayout)
-                .setCustomBigContentView(expandedLayout)
-
-                .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-                         */
-                    /*
-                .setLargeIcon(
-                    bitmap
-                )
-                //we can use also big text style etc.
-            .setStyle(NotificationCompat.InboxStyle()
-                .addLine("Line 1")
-                .addLine("Line 2")
-                .addLine("Line 3")
-                .addLine("Line 4")
-            )
-                 */
-                    /*
-                .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap)
-                    .bigLargeIcon(null))
-                    .setColor(ContextCompat.getColor(this, R.color.green))
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true)
-                     */
+                    .setSound(defaultNotificationSound)
+                    .setVibrate(longArrayOf(0, 250, 250, 250))
+                    .setLights(Color.GREEN, 500, 200)
                     .addAction(R.mipmap.ic_launcher, "Get BONUS!", pendingIntent)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
 
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+                /*
+            .setCustomContentView(collapsedLayout)
+            .setCustomBigContentView(expandedLayout)
+
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                     */
+                /*
+            .setLargeIcon(
+                bitmap
+            )
+            //we can use also big text style etc.
+        .setStyle(NotificationCompat.InboxStyle()
+            .addLine("Line 1")
+            .addLine("Line 2")
+            .addLine("Line 3")
+            .addLine("Line 4")
+        )
+             */
+                /*
+            .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap)
+                .bigLargeIcon(null))
+                .setColor(ContextCompat.getColor(this, R.color.green))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                 */
             }
             notificationManagerCompat = NotificationManagerCompat.from(this@MainActivity)
             // Notification ID is unique for each notification you create
@@ -116,9 +126,10 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "My Channel Name"
             val description = "My Channel description"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
 
             val channel = NotificationChannel(CHANNEL_ID, name, importance)
+            channel.vibrationPattern = longArrayOf(0, 250, 250, 250)
             channel.description = description
 
             //Register the channel with the system
@@ -143,33 +154,39 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    fun subscribeToDiscount(cookies: Int) {
+    private fun subscribeToDiscount(cookies: Int) {
         if (cookies <= 50) {
             FirebaseMessaging.getInstance().subscribeToTopic("small_discount")
                 .addOnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Toast.makeText(this,
-                        "Failed to subscribe to small discount",
-                            Toast.LENGTH_LONG).show()
-                    }
-                    else {
-                        Toast.makeText(this,
+                        Toast.makeText(
+                            this,
+                            "Failed to subscribe to small discount",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this,
                             "Successfully subscribed to small discount",
-                            Toast.LENGTH_LONG).show()
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
         } else {
             FirebaseMessaging.getInstance().subscribeToTopic("huge_discount")
                 .addOnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Toast.makeText(this,
+                        Toast.makeText(
+                            this,
                             "Failed to subscribe to huge discount",
-                            Toast.LENGTH_LONG).show()
-                    }
-                    else {
-                        Toast.makeText(this,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this,
                             "Successfully subscribed to huge discount",
-                            Toast.LENGTH_LONG).show()
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
         }
