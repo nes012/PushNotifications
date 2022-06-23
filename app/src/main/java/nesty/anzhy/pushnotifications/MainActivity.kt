@@ -48,18 +48,30 @@ class MainActivity : AppCompatActivity() {
                 PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
             }
 
+            val bitmap = BitmapFactory.decodeResource(
+                resources, R.drawable.chihuahua2
+            )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder = NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle(
                     "NOTIFICATION USING " +
                             "KOTLIN"
                 ).setContentText("You just bought $numberOfCookies Cookies!")
-                    .setSmallIcon(R.drawable.chihuahua).setLargeIcon(
-                        BitmapFactory.decodeResource(
-                            this.resources, R.drawable
-                                .chihuahua2
-                        )
+                    .setSmallIcon(R.drawable.chihuahua)
+                    .setLargeIcon(
+                        bitmap
                     )
+                    //we can use also big text style etc..
+                        /*
+                    .setStyle(NotificationCompat.InboxStyle()
+                        .addLine("Line 1")
+                        .addLine("Line 2")
+                        .addLine("Line 3")
+                        .addLine("Line 4")
+                    )
+                         */
+                    .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap)
+                        .bigLargeIcon(null))
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
