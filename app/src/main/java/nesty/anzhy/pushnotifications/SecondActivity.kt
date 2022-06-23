@@ -1,6 +1,7 @@
 package nesty.anzhy.pushnotifications
 
 import android.os.Bundle
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -21,11 +22,14 @@ class SecondActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-
         binding.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+
+        val numberOfCookies = intent.getStringExtra("cookie")
+
+        Toast.makeText(this, numberOfCookies, Toast.LENGTH_LONG).show()
     }
 
 }
